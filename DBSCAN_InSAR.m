@@ -1,5 +1,5 @@
-function [class, distance_matrix, lonlat_index] = DBSCAN_InSAR(velocity, lonlat, MinPts,Eps,...
-    velocity_thre,lon_lim,lat_lim,distance_matrix0)
+function [class, lonlat_index] = DBSCAN_InSAR(velocity, lonlat, MinPts,Eps,...
+    velocity_thre,lon_lim,lat_lim)
 
 %% Density-based spatial clustering of applications with noise (DBSCAN) for InSAR, edited by Chuang Song
 %% references: Ester M, Kriegel H-P, Sander J, Xu X. A density-based algorithm for discovering clusters in large spatial databases with noise. In: Proc. 2nd Int. Conf. Knowledge Discovery and Data Mining (KDD’96)). AAAI Press (1996).
@@ -12,7 +12,7 @@ function [class, distance_matrix, lonlat_index] = DBSCAN_InSAR(velocity, lonlat,
 % velocity_thre: threshold of InSAR velocity (mm/yr) for determining pixel similarity, set to 9999 to neglect this constraint.
 
 % Optional --> 
-% lon_lim: [minlon maxlon], lat_lim: [minlat, maxlat] and distance_matrix0
+% lon_lim: [minlon maxlon], lat_lim: [minlat, maxlat]
 
 % Outputs -->
 % class: with nans
@@ -60,12 +60,9 @@ x = [(1:m)' data];
 types = zeros(1,m);% 1: Core point 1, 0: boundary point, -1: noise point
 dealed = zeros(m,1);% 0: not processed, 1: processed
 class = -9999*ones(m,1);
-if nargin > 7
-    dis = distance_matrix0;
-else
-    fprintf('Calculate distance matrix for %d pixels ...\n',length(dataz));
-    dis = calDistance(x(:,2:n));
-end
+
+fprintf('Calculate distance matrix for %d pixels ...\n',length(dataz));
+dis = calDistance(x(:,2:n));
 distance_matrix = dis;
 number = 1;% to mark different classes
 
