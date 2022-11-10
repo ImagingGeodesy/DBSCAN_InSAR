@@ -6,13 +6,14 @@ function [class, lonlat_index] = DBSCAN_InSAR(velocity, lonlat, MinPts,Eps,...
 %% references: https://cloud.tencent.com/developer/article/1064264, credited by zhaozhiyong
 
 % Inputs -->
-% velocity, lonlat: vectors of velocity and [longitude latitude]
+% velocity: vectors of InSAR velocity
+% lonlat:  vector of [longitude latitude]
 % MinPts: minimum number of pixels in the searching window, e.g., 3
 % Eps: radius (m) of the searching window, e.g., 100
-% velocity_thre: threshold of InSAR velocity (mm/yr) for determining pixel similarity, set to 9999 to neglect this constraint.
 
 % Optional --> 
-% lon_lim: [minlon maxlon], lat_lim: [minlat, maxlat]
+% velocity_thre: threshold of InSAR velocity (mm/yr) for determining pixel similarity, default 9999 to neglect this constraint.
+% lon_lim: [minlon maxlon], lat_lim: [minlat, maxlat]: constraint of spatial range
 
 % Outputs -->
 % class: with nans
@@ -20,14 +21,17 @@ function [class, lonlat_index] = DBSCAN_InSAR(velocity, lonlat, MinPts,Eps,...
 
 % after this script -->
 % >> to extract valid classes, firstly, class_index = find(~isnan(class)); 
-% >> when without lon_lim and lat_lim: lonlat_out = lonlat(class_index,:)
-% >> when with lon_lim and lat_lim: lonlat_inside = lonlat(lonlat_index,:); lonlat_out = lonlat_inside(class_index,:);
+% >> when without lon_lim and lat_lim: lonlat_output = lonlat(class_index,:)
+% >> when with lon_lim and lat_lim: lonlat_inside = lonlat(lonlat_index,:); lonlat_output = lonlat_inside(class_index,:);
 
 %% Import data
 v_mm_yr = velocity;
 lon0 = lonlat(1,1); lat0 = lonlat(1,2);
 xy = llh2local(lonlat',[lon0,lat0])'*1000; % m
 
+if nargin > 4
+    velocity_thre = 9999;
+end
 lon_in = [];
 lat_in = [];
 if nargin > 5
